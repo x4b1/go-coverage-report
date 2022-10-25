@@ -8,8 +8,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/xabi93/go-coverage-report/cover"
-	"github.com/xabi93/go-coverage-report/fixtures"
+	"github.com/xabi93/go-coverage-report/pkg/cover"
+	"github.com/xabi93/go-coverage-report/pkg/fixtures"
 )
 
 func TestFileParser(t *testing.T) {
@@ -34,5 +34,10 @@ func TestFileParser(t *testing.T) {
 		require.Equal(t, 3, file.TotalStmts)
 		require.Equal(t, 1, file.Uncovered)
 		require.EqualValues(t, 67, math.Round(file.Coverage()))
+
+		require.Len(t, file.Lines, 1)
+		line := file.Lines[0]
+		require.Equal(t, 10, line.Start)
+		require.Equal(t, 12, line.End)
 	})
 }

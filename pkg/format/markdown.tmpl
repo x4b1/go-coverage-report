@@ -1,0 +1,7 @@
+Total Coverage: {{ printf "%.2f" .Coverage }}%
+
+| File | Total | Uncovered | Percent |
+| :--- | :---: | :-------: | :-----: |
+{{- range .Files }}
+| {{ .Name }} | {{ .TotalStmts }} | {{ .Uncovered }} | {{ printf "%.2f" .Coverage }}% |
+{{- end }}

@@ -4,7 +4,7 @@ import (
 	"errors"
 )
 
-//go:generate go test -count 1 ./... -coverprofile=cover.out
+//go:generate go test -count 1 ./... -coverprofile=cover
 
 func IsEven(i int) (bool, error) {
 	if i == 0 {

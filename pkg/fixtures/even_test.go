@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/xabi93/go-coverage-report/fixtures"
+	"github.com/xabi93/go-coverage-report/pkg/fixtures"
 )
 
 func TestIsEven(t *testing.T) {
