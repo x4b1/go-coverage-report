@@ -49,13 +49,16 @@ func run(ctx context.Context, args []string) error {
 	var notifier notify.Notifier
 	var err error
 
-	if os.Getenv("GITHUB_ACTIONS") == "true" {
+	switch opts.format {
+	case "stdout":
+		notifier = stdout.NewNotifier()
+	case "gh-check-run":
 		notifier, err = loadGHActions(ctx, opts)
 		if err != nil {
 			return err
 		}
-	} else {
-		notifier = stdout.NewNotifier()
+	default:
+		return errors.New("unknown output format")
 	}
 
 	formatter, err := format.NewMarkdown(opts.template)
@@ -93,7 +96,10 @@ func loadGHActions(ctx context.Context, opts *options) (*github.Notifier, error)
 }
 
 type options struct {
-	debug        bool
+	debug bool
+
+	format string
+
 	reportName   string
 	coverageFile string
 
@@ -113,6 +119,7 @@ func setupFlags(name string) (*pflag.FlagSet, *options) {
 
 	opts := &options{}
 
+	flags.StringVarP(&opts.format, "format", "f", "stdout", "Output format. [ stdout, gh-check-run ]")
 	flags.StringVar(&opts.coverageFile, "coverage-file", "", "Path where the coverage file is located.")
 	flags.StringVar(&opts.reportName, "report-name", "", "Title of the coverage report")
 	flags.StringVar(&opts.ghToken, "github-token", os.Getenv("GITHUB_TOKEN"), "Github authentication token. (env: GITHUB_TOKEN)")
