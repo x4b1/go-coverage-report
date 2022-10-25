@@ -57,6 +57,11 @@ func run(ctx context.Context, args []string) error {
 		if err != nil {
 			return err
 		}
+	case "gh-step-summary":
+		notifier = github.NewStepSummary()
+		if err != nil {
+			return err
+		}
 	default:
 		return errors.New("unknown output format")
 	}
@@ -79,14 +84,14 @@ func run(ctx context.Context, args []string) error {
 	return notifier.Notify(ctx, out)
 }
 
-func loadGHActions(ctx context.Context, opts *options) (*github.Notifier, error) {
+func loadGHActions(ctx context.Context, opts *options) (*github.CheckRun, error) {
 	ownerRepo := strings.Split(opts.ghRepository, "/")
 
 	if len(ownerRepo) < 2 {
 		return nil, errMissingOwnerOrRepo
 	}
 
-	return github.NewNotifier(
+	return github.NewCheckRun(
 		github.NewClient(ctx, opts.ghToken).Checks,
 		ownerRepo[0],
 		ownerRepo[1],
@@ -119,7 +124,7 @@ func setupFlags(name string) (*pflag.FlagSet, *options) {
 
 	opts := &options{}
 
-	flags.StringVarP(&opts.format, "format", "f", "stdout", "Output format. [ stdout, gh-check-run ]")
+	flags.StringVarP(&opts.format, "format", "f", "stdout", "Output format. [ stdout, gh-check-run, gh-step-summary ]")
 	flags.StringVar(&opts.coverageFile, "coverage-file", "", "Path where the coverage file is located.")
 	flags.StringVar(&opts.reportName, "report-name", "", "Title of the coverage report")
 	flags.StringVar(&opts.ghToken, "github-token", os.Getenv("GITHUB_TOKEN"), "Github authentication token. (env: GITHUB_TOKEN)")
