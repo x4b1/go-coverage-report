@@ -19,7 +19,7 @@ const (
 	sha  = "12314123"
 )
 
-func TestNotify(t *testing.T) {
+func TestCheckRunNotify(t *testing.T) {
 	cliError := errors.New("error")
 
 	customReportName := "my-report"
@@ -104,7 +104,7 @@ func TestNotify(t *testing.T) {
 			tc.setup(t, ccm)
 		}
 
-		err := notifier.NewNotifier(ccm, testOwner, testRepo, sha, tc.checkName).Notify(context.Background(), body)
+		err := notifier.NewCheckRun(ccm, testOwner, testRepo, sha, tc.checkName).Notify(context.Background(), body)
 		require.ErrorIs(t, err, tc.expectedErr)
 
 		if tc.assertCalls != nil {
