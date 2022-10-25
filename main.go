@@ -5,15 +5,17 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"strings"
 
 	"github.com/spf13/pflag"
 
+	"github.com/xabi93/go-coverage-report/internal/log"
 	"github.com/xabi93/go-coverage-report/pkg/cover"
 	"github.com/xabi93/go-coverage-report/pkg/format"
+	"github.com/xabi93/go-coverage-report/pkg/notify"
 	"github.com/xabi93/go-coverage-report/pkg/notify/github"
+	"github.com/xabi93/go-coverage-report/pkg/notify/stdout"
 )
 
 var (
@@ -25,7 +27,7 @@ const name = "go-coverage-report"
 
 func main() {
 	if err := run(context.Background(), os.Args[1:]); err != nil {
-		log.Fatal(err)
+		log.Error(err.Error())
 	}
 }
 
@@ -40,21 +42,28 @@ func run(ctx context.Context, args []string) error {
 		return err
 	}
 
-	if os.Getenv("GITHUB_ACTIONS") != "true" {
-		return errOnlyGHActionRunSupport
+	if opts.debug {
+		log.SetLevel(log.DebugLevel)
 	}
 
-	notifier, err := loadGHActions(ctx, opts)
+	var notifier notify.Notifier
+	var err error
+
+	if os.Getenv("GITHUB_ACTIONS") == "true" {
+		notifier, err = loadGHActions(ctx, opts)
+		if err != nil {
+			return err
+		}
+	} else {
+		notifier = stdout.NewNotifier()
+	}
+
+	formatter, err := format.NewMarkdown(opts.template)
 	if err != nil {
 		return err
 	}
 
-	formatter, err := format.NewMarkdown(opts.Template)
-	if err != nil {
-		return err
-	}
-
-	report, err := cover.NewFileParser(opts.CoverageFile).Parse(ctx)
+	report, err := cover.NewFileParser(opts.coverageFile).Parse(ctx)
 	if err != nil {
 		return err
 	}
@@ -68,30 +77,31 @@ func run(ctx context.Context, args []string) error {
 }
 
 func loadGHActions(ctx context.Context, opts *options) (*github.Notifier, error) {
-	ownerRepo := strings.Split(opts.GHRepository, "/")
+	ownerRepo := strings.Split(opts.ghRepository, "/")
 
 	if len(ownerRepo) < 2 {
 		return nil, errMissingOwnerOrRepo
 	}
 
 	return github.NewNotifier(
-		github.NewClient(ctx, opts.GHToken).Checks,
+		github.NewClient(ctx, opts.ghToken).Checks,
 		ownerRepo[0],
 		ownerRepo[1],
-		opts.GHSha,
-		opts.ReportName,
+		opts.ghSha,
+		opts.reportName,
 	), nil
 }
 
 type options struct {
-	ReportName   string
-	CoverageFile string
+	debug        bool
+	reportName   string
+	coverageFile string
 
-	GHToken      string
-	GHRepository string
-	GHSha        string
+	ghToken      string
+	ghRepository string
+	ghSha        string
 
-	Template string
+	template string
 }
 
 func setupFlags(name string) (*pflag.FlagSet, *options) {
@@ -101,16 +111,17 @@ func setupFlags(name string) (*pflag.FlagSet, *options) {
 		usage(os.Stdout, name, flags)
 	}
 
-	opt := &options{}
+	opts := &options{}
 
-	flags.StringVar(&opt.CoverageFile, "coverage-file", "", "Path where the coverage file is located.")
-	flags.StringVar(&opt.ReportName, "report-name", "", "Title of the coverage report")
-	flags.StringVar(&opt.GHToken, "github-token", os.Getenv("GITHUB_TOKEN"), "Github authentication token. (env: GITHUB_TOKEN)")
-	flags.StringVar(&opt.GHRepository, "github-repository", os.Getenv("GITHUB_REPOSITORY"), "Repository name with owner. ex: octocat/Hello-World ex: octocat")
-	flags.StringVar(&opt.GHSha, "github-sha", os.Getenv("GITHUB_SHA"), "The commit SHA that triggered the workflow. ex: ffac537e6cbbf934b08745a378932722df287a53")
-	flags.StringVar(&opt.Template, "template", "", "Custom template for output")
+	flags.StringVar(&opts.coverageFile, "coverage-file", "", "Path where the coverage file is located.")
+	flags.StringVar(&opts.reportName, "report-name", "", "Title of the coverage report")
+	flags.StringVar(&opts.ghToken, "github-token", os.Getenv("GITHUB_TOKEN"), "Github authentication token. (env: GITHUB_TOKEN)")
+	flags.StringVar(&opts.ghRepository, "github-repository", os.Getenv("GITHUB_REPOSITORY"), "Repository name with owner. ex: octocat/Hello-World ex: octocat")
+	flags.StringVar(&opts.ghSha, "github-sha", os.Getenv("GITHUB_SHA"), "The commit SHA that triggered the workflow. ex: ffac537e6cbbf934b08745a378932722df287a53")
+	flags.StringVar(&opts.template, "template", "", "Custom template for output")
+	flags.BoolVar(&opts.debug, "debug", false, "enabled debug logging")
 
-	return flags, opt
+	return flags, opts
 }
 
 func usage(out io.Writer, name string, flags *pflag.FlagSet) {

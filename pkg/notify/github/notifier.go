@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/google/go-github/v48/github"
+	"github.com/xabi93/go-coverage-report/internal/log"
 )
 
 //go:generate moq -stub -pkg github_test -out mocks_test.go . CheckCreator
@@ -35,11 +36,11 @@ type Notifier struct {
 
 // Notify creates a check run into github pull request with the given coverage report.
 func (n *Notifier) Notify(ctx context.Context, body string) error {
-	_, _, err := n.cli.CreateCheckRun(ctx, n.owner, n.repo, github.CreateCheckRunOptions{
+	cr, r, err := n.cli.CreateCheckRun(ctx, n.owner, n.repo, github.CreateCheckRunOptions{
 		Name:       n.checkName,
 		HeadSHA:    n.headSHA,
 		Status:     github.String("completed"),
-		Conclusion: github.String("neutral"),
+		Conclusion: github.String("success"),
 		Output: &github.CheckRunOutput{
 			Title:   github.String(n.checkName),
 			Summary: github.String(body),
@@ -48,6 +49,10 @@ func (n *Notifier) Notify(ctx context.Context, body string) error {
 	if err != nil {
 		return fmt.Errorf("github notify: %w", err)
 	}
+
+	log.Debugf("check run create response %d", r.StatusCode)
+	log.Debugf("check run id %d", cr.GetID())
+	log.Debugf("check run url %d", cr.GetURL())
 
 	return nil
 }
