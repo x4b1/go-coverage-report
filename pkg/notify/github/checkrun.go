@@ -17,15 +17,15 @@ type CheckCreator interface {
 
 const DefaultCheckName = "Coverage report"
 
-func NewNotifier(cc CheckCreator, owner, repo, headSHA, checkName string) *Notifier {
+func NewCheckRun(cc CheckCreator, owner, repo, headSHA, checkName string) *CheckRun {
 	if checkName == "" {
 		checkName = DefaultCheckName
 	}
-	return &Notifier{cc, owner, repo, headSHA, checkName}
+	return &CheckRun{cc, owner, repo, headSHA, checkName}
 }
 
-// Notifier implements coverage report notification for github.
-type Notifier struct {
+// CheckRun implements coverage report notification for github check runs.
+type CheckRun struct {
 	cli     CheckCreator
 	owner   string
 	repo    string
@@ -35,14 +35,14 @@ type Notifier struct {
 }
 
 // Notify creates a check run into github pull request with the given coverage report.
-func (n *Notifier) Notify(ctx context.Context, body string) error {
-	cr, r, err := n.cli.CreateCheckRun(ctx, n.owner, n.repo, github.CreateCheckRunOptions{
-		Name:       n.checkName,
-		HeadSHA:    n.headSHA,
+func (c *CheckRun) Notify(ctx context.Context, body string) error {
+	cr, r, err := c.cli.CreateCheckRun(ctx, c.owner, c.repo, github.CreateCheckRunOptions{
+		Name:       c.checkName,
+		HeadSHA:    c.headSHA,
 		Status:     github.String("completed"),
 		Conclusion: github.String("success"),
 		Output: &github.CheckRunOutput{
-			Title:   github.String(n.checkName),
+			Title:   github.String(c.checkName),
 			Summary: github.String(body),
 		},
 	})
