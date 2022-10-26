@@ -15,6 +15,8 @@ type File struct {
 	TotalStmts int
 	Uncovered  int
 	Lines      []*Line
+
+	OldCoverage float64
 }
 
 func (f File) Coverage() float64 {

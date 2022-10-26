@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/sethvargo/go-githubactions"
-	"github.com/xabi93/go-coverage-report/pkg/cover"
+	"github.com/x4b1/go-coverage-report/pkg/cover"
 )
 
 func NewStepSummary(action *githubactions.Action) *StepSummary {

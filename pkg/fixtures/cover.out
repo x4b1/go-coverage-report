@@ -1,0 +1,4 @@
+mode: set
+github.com/x4b1/go-coverage-report/pkg/fixtures/even.go:9.34,10.12 1 1
+github.com/x4b1/go-coverage-report/pkg/fixtures/even.go:14.2,14.22 1 1
+github.com/x4b1/go-coverage-report/pkg/fixtures/even.go:10.12,12.3 1 0

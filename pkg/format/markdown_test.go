@@ -5,9 +5,9 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/xabi93/go-coverage-report/pkg/cover"
-	"github.com/xabi93/go-coverage-report/pkg/fixtures"
-	"github.com/xabi93/go-coverage-report/pkg/format"
+	"github.com/x4b1/go-coverage-report/pkg/cover"
+	"github.com/x4b1/go-coverage-report/pkg/fixtures"
+	"github.com/x4b1/go-coverage-report/pkg/format"
 )
 
 var testCoverage = &cover.Report{
@@ -15,7 +15,7 @@ var testCoverage = &cover.Report{
 	Uncovered:  1,
 	Files: []*cover.File{
 		{
-			Name:       "github.com/xabi93/go-coverage-report/fixtures/even.go",
+			Name:       "github.com/x4b1/go-coverage-report/fixtures/even.go",
 			TotalStmts: 3,
 			Uncovered:  1,
 			Lines: []*cover.Line{

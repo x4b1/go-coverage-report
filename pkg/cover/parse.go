@@ -55,7 +55,6 @@ func parse(prof []*cover.Profile) *Report {
 
 		r.TotalStmts += f.TotalStmts
 		r.Uncovered += f.Uncovered
-
 	}
 	return &r
 }

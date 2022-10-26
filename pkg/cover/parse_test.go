@@ -8,8 +8,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/xabi93/go-coverage-report/pkg/cover"
-	"github.com/xabi93/go-coverage-report/pkg/fixtures"
+	"github.com/x4b1/go-coverage-report/pkg/cover"
+	"github.com/x4b1/go-coverage-report/pkg/fixtures"
 )
 
 func TestFileParser(t *testing.T) {

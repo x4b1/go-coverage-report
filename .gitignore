@@ -10,7 +10,10 @@
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
-!fixtures/cover.out
+!*/fixtures/cover.out
+
+# local test binaries
+bin/
 
 # Dependency directories (remove the comment below to include it)
-# vendor/
+vendor/

@@ -5,7 +5,7 @@ import (
 	_ "embed"
 	"text/template"
 
-	"github.com/xabi93/go-coverage-report/pkg/cover"
+	"github.com/x4b1/go-coverage-report/pkg/cover"
 )
 
 //go:embed markdown.tmpl

@@ -7,15 +7,14 @@ import (
 
 	"github.com/google/go-github/v48/github"
 	"github.com/sethvargo/go-githubactions"
-	"github.com/xabi93/go-coverage-report/internal/log"
-	"github.com/xabi93/go-coverage-report/pkg/cover"
+	"github.com/x4b1/go-coverage-report/pkg/cover"
 )
 
 var ErrMissingWorkflowRunField = errors.New("event of type 'workflow_run' is missing 'workflow_run' field")
 
 //go:generate moq -stub -pkg github_test -out mocks_test.go . CheckCreator
 
-// CheckCreator is just an interface to allow easy testing
+// CheckCreator is just an interface to allow easy testing.
 type CheckCreator interface {
 	CreateCheckRun(ctx context.Context, owner, repo string, opts github.CreateCheckRunOptions) (*github.CheckRun, *github.Response, error)
 }
@@ -69,11 +68,11 @@ func (c *CheckRun) Notify(ctx context.Context, report *cover.Report, body string
 	}
 
 	if r != nil {
-		log.Debugf("check run create response %d", r.StatusCode)
+		c.ghAction.Debugf("check run create response %d", r.StatusCode)
 	}
 	if cr != nil {
-		log.Debugf("check run id %d", cr.GetID())
-		log.Debugf("check run url %s", cr.GetURL())
+		c.ghAction.Debugf("check run id %d", cr.GetID())
+		c.ghAction.Debugf("check run url %s", cr.GetURL())
 	}
 
 	return nil

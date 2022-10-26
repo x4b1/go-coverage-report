@@ -6,7 +6,7 @@ package github_test
 import (
 	"context"
 	v48github "github.com/google/go-github/v48/github"
-	notifygithub "github.com/xabi93/go-coverage-report/pkg/notify/github"
+	notifygithub "github.com/x4b1/go-coverage-report/pkg/notify/github"
 	"sync"
 )
 

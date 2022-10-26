@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/xabi93/go-coverage-report/pkg/cover"
+	"github.com/x4b1/go-coverage-report/pkg/cover"
 )
 
 func NewNotifier() *Notifier {

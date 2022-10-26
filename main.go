@@ -5,17 +5,17 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"os"
 
 	"github.com/sethvargo/go-githubactions"
 	"github.com/spf13/pflag"
 
-	"github.com/xabi93/go-coverage-report/internal/log"
-	"github.com/xabi93/go-coverage-report/pkg/cover"
-	"github.com/xabi93/go-coverage-report/pkg/format"
-	"github.com/xabi93/go-coverage-report/pkg/notify"
-	"github.com/xabi93/go-coverage-report/pkg/notify/github"
-	"github.com/xabi93/go-coverage-report/pkg/notify/stdout"
+	"github.com/x4b1/go-coverage-report/pkg/cover"
+	"github.com/x4b1/go-coverage-report/pkg/format"
+	"github.com/x4b1/go-coverage-report/pkg/notify"
+	"github.com/x4b1/go-coverage-report/pkg/notify/github"
+	"github.com/x4b1/go-coverage-report/pkg/notify/stdout"
 )
 
 var (
@@ -27,7 +27,7 @@ const name = "go-coverage-report"
 
 func main() {
 	if err := run(context.Background(), os.Args[1:]); err != nil {
-		log.Error(err.Error())
+		log.Fatal(err.Error())
 	}
 }
 
@@ -40,10 +40,6 @@ func run(ctx context.Context, args []string) error {
 	case err != nil:
 		usage(os.Stderr, name, flags)
 		return err
-	}
-
-	if opts.debug {
-		log.SetLevel(log.DebugLevel)
 	}
 
 	var notifier notify.Notifier

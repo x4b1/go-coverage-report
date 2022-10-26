@@ -6,7 +6,7 @@ import (
 
 	"github.com/google/go-github/v48/github"
 	"github.com/sethvargo/go-githubactions"
-	"github.com/xabi93/go-coverage-report/pkg/cover"
+	"github.com/x4b1/go-coverage-report/pkg/cover"
 	"golang.org/x/oauth2"
 )
 

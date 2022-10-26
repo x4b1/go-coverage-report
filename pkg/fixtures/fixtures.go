@@ -8,7 +8,7 @@ import (
 //
 
 var (
-	//go:embed cover
+	//go:embed cover.out
 	CoverFile []byte
 	//go:embed default_md_result.md
 	DefaultMDResult string

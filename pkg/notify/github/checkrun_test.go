@@ -8,7 +8,7 @@ import (
 	"github.com/google/go-github/v48/github"
 	"github.com/stretchr/testify/require"
 
-	notifier "github.com/xabi93/go-coverage-report/pkg/notify/github"
+	notifier "github.com/x4b1/go-coverage-report/pkg/notify/github"
 )
 
 const (
@@ -99,7 +99,6 @@ func TestCheckRunNotify(t *testing.T) {
 			},
 		},
 	} {
-
 		ccm := &CheckCreatorMock{}
 
 		if tc.setup != nil {
