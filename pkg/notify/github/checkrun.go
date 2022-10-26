@@ -8,6 +8,7 @@ import (
 	"github.com/google/go-github/v48/github"
 	"github.com/sethvargo/go-githubactions"
 	"github.com/xabi93/go-coverage-report/internal/log"
+	"github.com/xabi93/go-coverage-report/pkg/cover"
 )
 
 var ErrMissingWorkflowRunField = errors.New("event of type 'workflow_run' is missing 'workflow_run' field")
@@ -19,11 +20,11 @@ type CheckCreator interface {
 	CreateCheckRun(ctx context.Context, owner, repo string, opts github.CreateCheckRunOptions) (*github.CheckRun, *github.Response, error)
 }
 
-const DefaultCheckName = "Coverage report"
+const DefaultCheckRunName = "Coverage report"
 
 func NewCheckRun(ghAction *githubactions.Action, cc CheckCreator, checkName string) *CheckRun {
 	if checkName == "" {
-		checkName = DefaultCheckName
+		checkName = DefaultCheckRunName
 	}
 	return &CheckRun{cc, ghAction, checkName}
 }
@@ -38,7 +39,7 @@ type CheckRun struct {
 }
 
 // Notify creates a check run into github pull request with the given coverage report.
-func (c *CheckRun) Notify(ctx context.Context, body string) error {
+func (c *CheckRun) Notify(ctx context.Context, report *cover.Report, body string) error {
 	ghCtx, err := c.ghAction.Context()
 	if err != nil {
 		return err
@@ -50,6 +51,8 @@ func (c *CheckRun) Notify(ctx context.Context, body string) error {
 	}
 
 	owner, repo := ghCtx.Repo()
+
+	outputTotal(report, c.ghAction)
 
 	cr, r, err := c.cc.CreateCheckRun(ctx, owner, repo, github.CreateCheckRunOptions{
 		Name:       c.checkName,

@@ -4,18 +4,23 @@ import (
 	"context"
 
 	"github.com/sethvargo/go-githubactions"
+	"github.com/xabi93/go-coverage-report/pkg/cover"
 )
 
-func NewStepSummary() *StepSummary {
-	return &StepSummary{}
+func NewStepSummary(action *githubactions.Action) *StepSummary {
+	return &StepSummary{action}
 }
 
 // StepSummary implements coverage report notification for github actions step summary.
-type StepSummary struct{}
+type StepSummary struct {
+	action *githubactions.Action
+}
 
 // Notify creates a check run into github pull request with the given coverage report.
-func (*StepSummary) Notify(_ context.Context, body string) error {
-	githubactions.AddStepSummary(body)
+func (ss *StepSummary) Notify(_ context.Context, report *cover.Report, body string) error {
+	outputTotal(report, ss.action)
+
+	ss.action.AddStepSummary(body)
 
 	return nil
 }

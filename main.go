@@ -58,7 +58,7 @@ func run(ctx context.Context, args []string) error {
 			return err
 		}
 	case "gh-step-summary":
-		notifier = github.NewStepSummary()
+		notifier = github.NewStepSummary(githubactions.New())
 		if err != nil {
 			return err
 		}
@@ -81,7 +81,7 @@ func run(ctx context.Context, args []string) error {
 		return err
 	}
 
-	return notifier.Notify(ctx, out)
+	return notifier.Notify(ctx, report, out)
 }
 
 func loadGHActions(ctx context.Context, opts *options) (*github.CheckRun, error) {

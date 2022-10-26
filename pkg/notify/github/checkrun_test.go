@@ -59,12 +59,12 @@ func TestCheckRunNotify(t *testing.T) {
 				require.Equal(t, testOwner, call.Owner)
 				require.Equal(t, testRepo, call.Repo)
 				require.Equal(t, github.CreateCheckRunOptions{
-					Name:       notifier.DefaultCheckName,
+					Name:       notifier.DefaultCheckRunName,
 					HeadSHA:    sha,
 					Status:     github.String("completed"),
 					Conclusion: github.String("success"),
 					Output: &github.CheckRunOutput{
-						Title:   github.String(notifier.DefaultCheckName),
+						Title:   github.String(notifier.DefaultCheckRunName),
 						Summary: github.String(body),
 					},
 				}, call.Opts)
@@ -106,7 +106,7 @@ func TestCheckRunNotify(t *testing.T) {
 			tc.setup(t, ccm)
 		}
 
-		err := notifier.NewCheckRun(nil, ccm, tc.checkName).Notify(context.Background(), body)
+		err := notifier.NewCheckRun(nil, ccm, tc.checkName).Notify(context.Background(), nil, body)
 		require.ErrorIs(t, err, tc.expectedErr)
 
 		if tc.assertCalls != nil {
