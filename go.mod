@@ -3,6 +3,7 @@ module github.com/x4b1/go-coverage-report
 go 1.19
 
 require (
+	github.com/golangci/revgrep v0.0.0-20220804021717-745bb2f7c2e6
 	github.com/google/go-github/v48 v48.0.0
 	github.com/stretchr/testify v1.8.0
 	golang.org/x/tools v0.2.0

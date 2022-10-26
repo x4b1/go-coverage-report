@@ -2,9 +2,6 @@
 name: build
 
 on:
-  push:
-    paths-ignore:
-      - "**.md"
   pull_request:
 jobs:
   lint:
@@ -12,6 +9,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version-file: go.mod
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
   test:
@@ -39,16 +40,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
       - name: run tests
-        run: go test -count 1 ./... -coverprofile=cover.out
+        run: go test -count 1 ./... -coverprofile=cover.out -covermode=count
       - name: publish coverage step summary
         run: |
           go run ./main.go \
-          --coverage-file='report' -f gh-step-summary
+          --coverage-file='cover.out' -f gh-step-summary
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: publish coverage check run
         run: |
           go run ./main.go \
-          --coverage-file='report' -f gh-check-run
+          --coverage-file='cover.out' -f gh-check-run
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

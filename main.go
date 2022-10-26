@@ -81,9 +81,11 @@ func run(ctx context.Context, args []string) error {
 }
 
 func loadGHActions(ctx context.Context, opts *options) (*github.CheckRun, error) {
+	ghCli := github.NewClient(ctx, opts.ghToken)
 	return github.NewCheckRun(
 		githubactions.New(),
-		github.NewClient(ctx, opts.ghToken).Checks,
+		ghCli.Checks,
+		ghCli.PullRequests,
 		opts.reportName,
 	), nil
 }
