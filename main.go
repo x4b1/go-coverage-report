@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"strings"
 
+	"github.com/sethvargo/go-githubactions"
 	"github.com/spf13/pflag"
 
 	"github.com/xabi93/go-coverage-report/internal/log"
@@ -85,17 +85,9 @@ func run(ctx context.Context, args []string) error {
 }
 
 func loadGHActions(ctx context.Context, opts *options) (*github.CheckRun, error) {
-	ownerRepo := strings.Split(opts.ghRepository, "/")
-
-	if len(ownerRepo) < 2 {
-		return nil, errMissingOwnerOrRepo
-	}
-
 	return github.NewCheckRun(
+		githubactions.New(),
 		github.NewClient(ctx, opts.ghToken).Checks,
-		ownerRepo[0],
-		ownerRepo[1],
-		opts.ghSha,
 		opts.reportName,
 	), nil
 }
@@ -108,9 +100,7 @@ type options struct {
 	reportName   string
 	coverageFile string
 
-	ghToken      string
-	ghRepository string
-	ghSha        string
+	ghToken string
 
 	template string
 }
@@ -128,8 +118,6 @@ func setupFlags(name string) (*pflag.FlagSet, *options) {
 	flags.StringVar(&opts.coverageFile, "coverage-file", "", "Path where the coverage file is located.")
 	flags.StringVar(&opts.reportName, "report-name", "", "Title of the coverage report")
 	flags.StringVar(&opts.ghToken, "github-token", os.Getenv("GITHUB_TOKEN"), "Github authentication token. (env: GITHUB_TOKEN)")
-	flags.StringVar(&opts.ghRepository, "github-repository", os.Getenv("GITHUB_REPOSITORY"), "Repository name with owner. ex: octocat/Hello-World ex: octocat")
-	flags.StringVar(&opts.ghSha, "github-sha", os.Getenv("GITHUB_SHA"), "The commit SHA that triggered the workflow. ex: ffac537e6cbbf934b08745a378932722df287a53")
 	flags.StringVar(&opts.template, "template", "", "Custom template for output")
 	flags.BoolVar(&opts.debug, "debug", false, "enabled debug logging")
 

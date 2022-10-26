@@ -40,9 +40,15 @@ jobs:
             ${{ runner.os }}-go-
       - name: run tests
         run: go test -count 1 ./... -coverprofile=cover.out
-      - name: publish coverage
+      - name: publish coverage step summary
         run: |
           go run ./main.go \
-          --coverage-file='cover.out'
+          --coverage-file='report' -f gh-step-summary
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: publish coverage check run
+        run: |
+          go run ./main.go \
+          --coverage-file='report' -f gh-check-run
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
